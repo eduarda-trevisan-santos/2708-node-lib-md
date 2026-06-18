@@ -5,12 +5,10 @@ const textoTeste = 'São geralmente recuperados a partir de um objeto [Percy Jac
 
 function extraiLinks(texto) {
   const regex = /\[([^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)/gm;
-  const capturas = texto.match(regex);
-  console.log(capturas);
-
+  const capturas = [...texto.matchAll(regex)];
+  const resultados = capturas.map(captura => ({[captura[1]]: captura[2]}))
+  return resultados.length !== 0 ? resultados : 'não há links no arquivo'; 
 }
-
-extraiLinks(textoTeste);
 
 function trataErro(erro) {
     console.log(erro);
@@ -22,9 +20,8 @@ function trataErro(erro) {
  async function pegaArquivo(caminhoDoArquivo) {
  try {
   const encoding = 'utf-8';
-  const texto = await fs.promises.readFile
-  (caminhoDoArquivo, encoding)
-  console.log(chalk.green(texto));
+  const texto = await fs.promises.readFile(caminhoDoArquivo, encoding)
+  return extraiLinks(texto);
   } catch (erro) {
     trataErro(erro)
   }
@@ -51,6 +48,8 @@ function trataErro(erro) {
  // })
 // }
 
-// pegaArquivo('./arquivos/texto.md');
+ pegaArquivo('./arquivos/texto.md');
 
 // \[^[\]]*?)\]\((https?:\/\/[^\s?#.].[^\s]*)\)
+
+export default pegaArquivo;
